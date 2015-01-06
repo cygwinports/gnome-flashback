@@ -1,0 +1,21 @@
+inherit gnome2
+
+NAME="gnome-flashback"
+VERSION=3.14.0
+RELEASE=1
+CATEGORY="GNOME"
+SUMMARY="GNOME Flashback session"
+DESCRIPTION="Gnome Flashback is a session for Gnome 3. It provides a similar
+user experience to the Gnome 2.x series sessions. The differences to the Mate
+project is that Gnome Flashback uses Gtk+3 and tries to follow the current
+Gnome development by integrating recent changes of the Gnome libraries."
+HOMEPAGE="https://wiki.gnome.org/Projects/GnomeFlashback"
+
+REQUIRES="dbus-x11 gnome-panel gnome-applets gnome-settings-daemon gnome-session metacity nautilus notification-daemon run xinit"
+
+src_install() {
+	cd ${B}
+	cyginstall
+
+	find ${D} -name "${NAME}-compiz*" -delete
+}
