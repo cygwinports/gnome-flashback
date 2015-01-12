@@ -11,7 +11,7 @@ project is that Gnome Flashback uses Gtk+3 and tries to follow the current
 Gnome development by integrating recent changes of the Gnome libraries."
 HOMEPAGE="https://wiki.gnome.org/Projects/GnomeFlashback"
 
-REQUIRES="dbus-x11 gnome-panel gnome-applets gnome-settings-daemon gnome-session metacity nautilus notification-daemon run xinit"
+REQUIRES="at-spi2-core dbus-x11 gnome-applets gnome-control-center gnome-desktop gnome-keyring gnome-panel gnome-settings-daemon gnome-session gnome-terminal metacity nautilus notification-daemon run xdg-user-dirs-gtk xinit"
 
 src_install() {
 	cd ${B}
