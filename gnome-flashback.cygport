@@ -2,7 +2,7 @@ inherit gnome2
 
 NAME="gnome-flashback"
 VERSION=3.14.0
-RELEASE=1
+RELEASE=2
 CATEGORY="GNOME"
 SUMMARY="GNOME Flashback session"
 DESCRIPTION="Gnome Flashback is a session for Gnome 3. It provides a similar
