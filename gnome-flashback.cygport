@@ -1,8 +1,8 @@
 inherit gnome2
 
 NAME="gnome-flashback"
-VERSION=3.14.0
-RELEASE=2
+VERSION=3.18.1
+RELEASE=1
 CATEGORY="GNOME"
 SUMMARY="GNOME Flashback session"
 DESCRIPTION="Gnome Flashback is a session for Gnome 3. It provides a similar
@@ -10,6 +10,8 @@ user experience to the Gnome 2.x series sessions. The differences to the Mate
 project is that Gnome Flashback uses Gtk+3 and tries to follow the current
 Gnome development by integrating recent changes of the Gnome libraries."
 HOMEPAGE="https://wiki.gnome.org/Projects/GnomeFlashback"
+
+PATCH_URI="3.18.1-cygwin.patch"
 
 REQUIRES="at-spi2-core gnome-applets gnome-control-center gnome-desktop"
 REQUIRES+=" gnome-keyring gnome-panel gnome-settings-daemon gnome-session"

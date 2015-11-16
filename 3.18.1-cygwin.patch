@@ -1,0 +1,196 @@
+--- origsrc/gnome-flashback-3.18.1/configure.ac	2015-10-15 02:17:03.000000000 -0500
++++ src/gnome-flashback-3.18.1/configure.ac	2015-11-15 01:33:06.665923000 -0600
+@@ -107,7 +107,8 @@ PKG_CHECK_MODULES([AUTOMOUNT_MANAGER], [
+ PKG_CHECK_MODULES([BLUETOOTH_APPLET], [
+   gtk+-3.0 >= $GTK_REQUIRED
+   gnome-bluetooth-1.0
+-])
++],[BLUETOOTH=yes],[BLUETOOTH=no])
++AM_CONDITIONAL([WITH_BLUETOOTH],[test "x$BLUETOOTH" = "xyes"])
+ 
+ PKG_CHECK_MODULES([COMMON], [
+   gtk+-3.0 >= $GTK_REQUIRED
+@@ -123,7 +124,6 @@ PKG_CHECK_MODULES([DISPLAY_CONFIG], [
+   gtk+-3.0 >= $GTK_REQUIRED
+   glib-2.0 >= $GLIB_REQUIRED
+   gnome-desktop-3.0 >= $LIBGNOME_DESKTOP_REQUIRED
+-  upower-glib >= $UPOWER_GLIB_REQUIRED
+   x11
+   xext
+   xrandr
+@@ -155,12 +155,14 @@ PKG_CHECK_MODULES([POLKIT], [
+   glib-2.0 >= $GLIB_REQUIRED
+   polkit-agent-1 >= $POLKIT_AGENT_REQUIRED
+   polkit-gobject-1 >= $POLKIT_GOBJECT_REQUIRED
+-])
++],[POLKIT=yes],[POLKIT=no])
++AM_CONDITIONAL([WITH_POLKIT],[test "x$POLKIT" = "xyes"])
+ 
+ PKG_CHECK_MODULES([POWER_APPLET], [
+   gtk+-3.0 >= $GTK_REQUIRED
+   upower-glib
+-])
++],[UPOWER=yes],[UPOWER=no])
++AM_CONDITIONAL([WITH_UPOWER],[test "x$UPOWER" = "xyes"])
+ 
+ PKG_CHECK_MODULES([SCREENCAST], [
+   gtk+-3.0 >= $GTK_REQUIRED
+--- origsrc/gnome-flashback-3.18.1/gnome-flashback/Makefile.am	2015-09-27 09:17:59.000000000 -0500
++++ src/gnome-flashback-3.18.1/gnome-flashback/Makefile.am	2015-11-15 02:35:04.602450500 -0600
+@@ -2,15 +2,12 @@ NULL =
+ 
+ SUBDIRS = \
+ 	libautomount-manager \
+-	libbluetooth-applet \
+ 	libcommon \
+ 	libdesktop-background \
+ 	libdisplay-config \
+ 	libend-session-dialog \
+ 	libidle-monitor \
+ 	libinput-sources \
+-	libpolkit \
+-	libpower-applet \
+ 	libscreencast \
+ 	libscreenshot \
+ 	libshell \
+@@ -18,6 +15,16 @@ SUBDIRS = \
+ 	libworkarounds \
+ 	$(NULL)
+ 
++if WITH_BLUETOOTH
++SUBDIRS += libbluetooth-applet
++endif
++if WITH_POLKIT
++SUBDIRS += libpolkit
++endif
++if WITH_UPOWER
++SUBDIRS += libpower-applet
++endif
++
+ bin_PROGRAMS = \
+ 	gnome-flashback \
+ 	$(NULL)
+@@ -47,14 +54,11 @@ gnome_flashback_LDFLAGS = \
+ gnome_flashback_LDADD = \
+ 	$(GNOME_FLASHBACK_LIBS) \
+ 	$(top_builddir)/gnome-flashback/libautomount-manager/libautomount-manager.la \
+-	$(top_builddir)/gnome-flashback/libbluetooth-applet/libbluetooth-applet.la \
+ 	$(top_builddir)/gnome-flashback/libdesktop-background/libdesktop-background.la \
+ 	$(top_builddir)/gnome-flashback/libdisplay-config/libdisplay-config.la \
+ 	$(top_builddir)/gnome-flashback/libend-session-dialog/libend-session-dialog.la \
+ 	$(top_builddir)/gnome-flashback/libidle-monitor/libidle-monitor.la \
+ 	$(top_builddir)/gnome-flashback/libinput-sources/libinput-sources.la \
+-	$(top_builddir)/gnome-flashback/libpolkit/libpolkit.la \
+-	$(top_builddir)/gnome-flashback/libpower-applet/libpower-applet.la \
+ 	$(top_builddir)/gnome-flashback/libscreencast/libscreencast.la \
+ 	$(top_builddir)/gnome-flashback/libscreenshot/libscreenshot.la \
+ 	$(top_builddir)/gnome-flashback/libshell/libshell.la \
+@@ -62,6 +66,19 @@ gnome_flashback_LDADD = \
+ 	$(top_builddir)/gnome-flashback/libworkarounds/libworkarounds.la \
+ 	$(NULL)
+ 
++if WITH_BLUETOOTH
++gnome_flashback_LDADD += \
++	$(top_builddir)/gnome-flashback/libbluetooth-applet/libbluetooth-applet.la
++endif
++if WITH_POLKIT
++gnome_flashback_LDADD += \
++	$(top_builddir)/gnome-flashback/libpolkit/libpolkit.la
++endif
++if WITH_UPOWER
++gnome_flashback_LDADD += \
++	$(top_builddir)/gnome-flashback/libpower-applet/libpower-applet.la
++endif
++
+ gf-resources.c: flashback.gresource.xml $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir) --generate-dependencies $(srcdir)/flashback.gresource.xml)
+ 	$(AM_V_GEN)$(GLIB_COMPILE_RESOURCES) --target=$@ --sourcedir=$(srcdir) --generate --c-name gf $<
+ 
+--- origsrc/gnome-flashback-3.18.1/gnome-flashback/gf-application.c	2015-09-23 16:58:42.000000000 -0500
++++ src/gnome-flashback-3.18.1/gnome-flashback/gf-application.c	2015-11-15 02:33:02.033036800 -0600
+@@ -141,13 +141,19 @@ settings_changed (GSettings   *settings,
+   SETTING_CHANGED (automount, "automount-manager", gsd_automount_manager_new)
+   SETTING_CHANGED (config, "display-config", flashback_display_config_new)
+   SETTING_CHANGED (idle_monitor, "idle-monitor", flashback_idle_monitor_new)
++#if 0
+   SETTING_CHANGED (polkit, "polkit", flashback_polkit_new)
++#endif
+   SETTING_CHANGED (shell, "shell", flashback_shell_new)
++#if 0
+   SETTING_CHANGED (bluetooth, "bluetooth-applet", gf_bluetooth_applet_new)
++#endif
+   SETTING_CHANGED (background, "desktop-background", gf_desktop_background_new)
+   SETTING_CHANGED (dialog, "end-session-dialog", gf_end_session_dialog_new)
+   SETTING_CHANGED (input_sources, "input-sources", gf_input_sources_new)
++#if 0
+   SETTING_CHANGED (power, "power-applet", gf_power_applet_new)
++#endif
+   SETTING_CHANGED (screencast, "screencast", gf_screencast_new)
+   SETTING_CHANGED (screenshot, "screenshot", gf_screenshot_new)
+   SETTING_CHANGED (sound, "sound-applet", gf_sound_applet_new)
+@@ -181,13 +187,19 @@ gf_application_dispose (GObject *object)
+   g_clear_object (&application->automount);
+   g_clear_object (&application->config);
+   g_clear_object (&application->idle_monitor);
++#if 0
+   g_clear_object (&application->polkit);
++#endif
+   g_clear_object (&application->shell);
++#if 0
+   g_clear_object (&application->bluetooth);
++#endif
+   g_clear_object (&application->background);
+   g_clear_object (&application->dialog);
+   g_clear_object (&application->input_sources);
++#if 0
+   g_clear_object (&application->power);
++#endif
+   g_clear_object (&application->screencast);
+   g_clear_object (&application->screenshot);
+   g_clear_object (&application->sound);
+--- origsrc/gnome-flashback-3.18.1/gnome-flashback/libdisplay-config/flashback-monitor-config.c	2015-09-25 13:23:03.000000000 -0500
++++ src/gnome-flashback-3.18.1/gnome-flashback/libdisplay-config/flashback-monitor-config.c	2015-11-15 01:39:03.797345700 -0600
+@@ -33,7 +33,6 @@
+ 
+ #include <config.h>
+ #include <string.h>
+-#include <libupower-glib/upower.h>
+ #include "flashback-monitor-config.h"
+ 
+ /* These structures represent the intended/persistent configuration,
+@@ -117,7 +116,6 @@ struct _FlashbackMonitorConfig
+   GFile                   *system_file;
+   GCancellable            *save_cancellable;
+ 
+-  UpClient                *up_client;
+   gboolean                 lid_is_closed;
+ 
+   FlashbackMonitorManager *manager;
+@@ -745,6 +743,7 @@ turn_off_laptop_display (FlashbackMonito
+   config->current_is_for_laptop_lid = TRUE;
+ }
+ 
++#if 0
+ static void
+ power_client_changed_cb (UpClient   *client,
+                          GParamSpec *pspec,
+@@ -766,6 +765,7 @@ power_client_changed_cb (UpClient   *cli
+         flashback_monitor_config_restore_previous (config);
+     }
+ }
++#endif
+ 
+ static void
+ handle_start_element (GMarkupParseContext  *context,
+@@ -1925,11 +1925,7 @@ flashback_monitor_config_init (Flashback
+       g_free (path);
+     }
+ 
+-  config->up_client = up_client_new ();
+-  config->lid_is_closed = up_client_get_lid_is_closed (config->up_client);
+-
+-  g_signal_connect_object (config->up_client, "notify::lid-is-closed",
+-                           G_CALLBACK (power_client_changed_cb), config, 0);
++  config->lid_is_closed = FALSE;
+ }
+ 
+ FlashbackMonitorConfig *
