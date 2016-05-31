@@ -1,7 +1,7 @@
 inherit gnome2
 
 NAME="gnome-flashback"
-VERSION=3.18.1
+VERSION=3.18.2
 RELEASE=1
 CATEGORY="GNOME"
 SUMMARY="GNOME Flashback session"
