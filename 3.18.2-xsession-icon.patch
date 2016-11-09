@@ -1,0 +1,14 @@
+--- origsrc/gnome-flashback-3.18.2/data/xsessions/gnome-flashback-compiz.desktop.in.in	2016-02-15 15:07:46.000000000 -0600
++++ src/gnome-flashback-3.18.2/data/xsessions/gnome-flashback-compiz.desktop.in.in	2016-11-08 22:00:18.457238400 -0600
+@@ -5,3 +5,4 @@ Exec=@libexecdir@/gnome-flashback-compiz
+ TryExec=compiz
+ Type=Application
+ DesktopNames=GNOME-Flashback;GNOME;
++Icon=gnome
+--- origsrc/gnome-flashback-3.18.2/data/xsessions/gnome-flashback-metacity.desktop.in.in	2016-02-15 15:07:46.000000000 -0600
++++ src/gnome-flashback-3.18.2/data/xsessions/gnome-flashback-metacity.desktop.in.in	2016-11-08 22:07:04.704686600 -0600
+@@ -5,3 +5,4 @@ Exec=@libexecdir@/gnome-flashback-metaci
+ TryExec=metacity
+ Type=Application
+ DesktopNames=GNOME-Flashback;GNOME;
++Icon=gnome

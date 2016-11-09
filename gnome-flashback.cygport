@@ -2,7 +2,7 @@ inherit gnome2
 
 NAME="gnome-flashback"
 VERSION=3.18.2
-RELEASE=1
+RELEASE=2
 CATEGORY="GNOME"
 SUMMARY="GNOME Flashback session"
 DESCRIPTION="Gnome Flashback is a session for Gnome 3. It provides a similar
@@ -11,7 +11,11 @@ project is that Gnome Flashback uses Gtk+3 and tries to follow the current
 Gnome development by integrating recent changes of the Gnome libraries."
 HOMEPAGE="https://wiki.gnome.org/Projects/GnomeFlashback"
 
-PATCH_URI="3.18.1-cygwin.patch"
+SRC_URI+=" gnome.ico"
+PATCH_URI="
+	3.18.1-cygwin.patch
+	3.18.2-xsession-icon.patch
+"
 
 REQUIRES="at-spi2-core gnome-applets gnome-control-center gnome-desktop"
 REQUIRES+=" gnome-keyring gnome-panel gnome-settings-daemon gnome-session"
@@ -24,4 +28,7 @@ src_install() {
 	cyginstall
 
 	find ${D} -name "${NAME}-compiz*" -delete
+
+	insinto /usr/share/pixmaps/xwin
+	doins ${S}/gnome.ico
 }
