@@ -1,7 +1,7 @@
 inherit gnome2
 
 NAME="gnome-flashback"
-VERSION=3.24.0
+VERSION=3.26.0
 RELEASE=1
 CATEGORY="GNOME"
 SUMMARY="GNOME Flashback session"
@@ -13,9 +13,8 @@ HOMEPAGE="https://wiki.gnome.org/Projects/GnomeFlashback"
 
 SRC_URI+=" gnome.ico"
 PATCH_URI="
-	3.22.0-cygwin.patch
+	3.26.0-cygwin.patch
 	3.18.2-xsession-icon.patch
-	3.24.0-gnome-session.patch
 "
 
 REQUIRES="at-spi2-core gnome-applets gnome-control-center gnome-desktop"
